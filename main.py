@@ -27,10 +27,13 @@ async def on_message(message: discord.Message):
         await message.channel.send("Query is too short!")
         return
 
-    msg = message.content.lower()
-    if msg in characters_set:
-        await message.channel.send("That is the Sephiroth Role")
-        await assign_role(char_name="Sephiroth", message=message)
+    query = message.content.lower()
+
+    for character in characters_set:
+        if query in character.lower():
+            await message.channel.send(f"That is the {character} Role")
+            await assign_role(char_name=character, message=message)
+            return
 
     await message.channel.send("Character has not been found.")
 
