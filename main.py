@@ -1,3 +1,4 @@
+from characters import characters_set
 from dotenv import load_dotenv
 from discord.utils import get
 import discord
@@ -14,8 +15,8 @@ token = os.getenv("BOT_TOKEN")
 
 
 async def assign_role(char_name, message: discord.Message):
-    role = get(message.guild.roles, name="Sephiroth")
-    await message.mentions[0].add_roles(role)
+    role = get(message.guild.roles, name=char_name)
+    await message.author.add_roles(role)
 
 
 @client.event
@@ -27,9 +28,11 @@ async def on_message(message: discord.Message):
         return
 
     msg = message.content.lower()
-    if msg in "sephiroth":
+    if msg in characters_set:
         await message.channel.send("That is the Sephiroth Role")
-        await assign_role(char_name="sephiroth", message=message)
+        await assign_role(char_name="Sephiroth", message=message)
+
+    await message.channel.send("Character has not been found.")
 
 
 @client.event
