@@ -1,6 +1,7 @@
+from dotenv import load_dotenv
+from discord.utils import get
 import discord
 import os
-from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -12,11 +13,23 @@ client = discord.Client(intents=intents)
 token = os.getenv("BOT_TOKEN")
 
 
+async def assign_role(char_name, message: discord.Message):
+    role = get(message.guild.roles, name="Sephiroth")
+    await message.mentions[0].add_roles(role)
+
+
 @client.event
 async def on_message(message: discord.Message):
     if message.author == client.user or not message.guild:
         return
-    await message.channel.send("Hello World!")
+    if len(message.content) < 3:
+        await message.channel.send("Query is too short!")
+        return
+
+    msg = message.content.lower()
+    if msg in "sephiroth":
+        await message.channel.send("That is the Sephiroth Role")
+        await assign_role(char_name="sephiroth", message=message)
 
 
 @client.event
