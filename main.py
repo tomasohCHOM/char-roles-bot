@@ -16,9 +16,14 @@ token = os.getenv("BOT_TOKEN")
 discord_server_id = int(os.getenv("DISCORD_SERVER_ID"))
 
 
-async def assign_role(char_name: str, message: discord.Message) -> None:
-    role = get(message.guild.roles, name=char_name)
-    await message.author.add_roles(role)
+async def assign_role(char_name: str, interaction: discord.Interaction) -> None:
+    role = get(interaction.guild.roles, name=char_name)
+    await interaction.user.add_roles(role)
+
+
+async def remove_role(char_name: str, interaction: discord.Interaction) -> None:
+    role = get(interaction.guild.roles, name=char_name)
+    await interaction.user.remove_roles(role)
 
 
 @tree.command(
@@ -26,27 +31,43 @@ async def assign_role(char_name: str, message: discord.Message) -> None:
     description="Selects a SSBU Character role",
     guild=discord.Object(id=discord_server_id),
 )
-async def first_command(interaction: discord.Interaction, character: str):
-    await interaction.response.send_message(f"You said {character}")
-
-
-@client.event
-async def on_message(message: discord.Message) -> None:
-    if message.author == client.user or not message.guild:
+async def select_character_command(
+    interaction: discord.Interaction, character_query: str
+) -> None:
+    if len(character_query) < 3:
+        await interaction.response.send("Character query is too short!")
         return
-    if len(message.content) < 3:
-        await message.channel.send("Query is too short!")
-        return
-
-    query = message.content.lower()
+    query = character_query.lower()
 
     for character in characters_set:
         if query in character.lower():
-            await message.channel.send(f"That is the {character} Role")
-            await assign_role(char_name=character, message=message)
+            await interaction.response.send_message(
+                f"{interaction.user} selected {character} role"
+            )
+            await assign_role(char_name=character, interaction=interaction)
             return
 
-    await message.channel.send("Character has not been found.")
+
+@tree.command(
+    name="remove-character",
+    description="Removes a SSBU Character role for when you finally decided to drop that low-tier ass character",
+    guild=discord.Object(id=discord_server_id),
+)
+async def remove_character_command(
+    interaction: discord.Interaction, character: str
+) -> None:
+    if len(character) < 3:
+        await interaction.response.send_message("Character query is too short!")
+        return
+    character_query = character.lower()
+
+    for character in characters_set:
+        if character_query in character.lower():
+            await remove_role(char_name=character, interaction=interaction)
+            await interaction.response.send_message(
+                f"{interaction.user} removed {character} role"
+            )
+            return
 
 
 @client.event
