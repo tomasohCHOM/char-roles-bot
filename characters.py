@@ -1,4 +1,7 @@
+# Falco appears at the top of the list because "Captain Falcon" directly
+# contains the substring "Falco", causing issues when selecting the former's role
 characters = [
+    "Falco",
     "Mario",
     "Donkey Kong",
     "Link",
@@ -20,7 +23,6 @@ characters = [
     "Zelda",
     "Dr. Mario",
     "Pichu",
-    "Falco",
     "Marth",
     "Lucina",
     "Young Link",
@@ -88,5 +90,3 @@ characters = [
     "Kazuya",
     "Sora",
 ]
-
-characters_set = set(characters)

@@ -1,4 +1,4 @@
-from characters import characters_set
+from characters import characters
 from dotenv import load_dotenv
 from discord.utils import get
 import discord
@@ -42,16 +42,16 @@ async def remove_role(char_name: str, interaction: discord.Interaction) -> None:
     guild=discord.Object(id=discord_server_id),
 )
 async def select_character_command(
-    interaction: discord.Interaction, character_query: str
+    interaction: discord.Interaction, character: str
 ) -> None:
-    if len(character_query) < 3:
+    if len(character) < 3:
         await interaction.response.send_message("Character query is too short!")
         return
-    query = character_query.lower()
+    query = character.lower()
 
-    for character in characters_set:
-        if query in character.lower():
-            await assign_role(char_name=character, interaction=interaction)
+    for character_name in characters:
+        if query in character_name.lower():
+            await assign_role(char_name=character_name, interaction=interaction)
             return
 
 
@@ -66,11 +66,11 @@ async def remove_character_command(
     if len(character) < 3:
         await interaction.response.send_message("Character query is too short!")
         return
-    character_query = character.lower()
+    query = character.lower()
 
-    for character in characters_set:
-        if character_query in character.lower():
-            await remove_role(char_name=character, interaction=interaction)
+    for character_name in characters:
+        if query in character_name.lower():
+            await remove_role(char_name=character_name, interaction=interaction)
             return
 
 
