@@ -22,12 +22,12 @@ async def assign_role(char_name: str, message: discord.Message) -> None:
 
 
 @tree.command(
-    name="commandname",
-    description="My first application Command",
+    name="select-character",
+    description="Selects a SSBU Character role",
     guild=discord.Object(id=discord_server_id),
-)  # Add the guild ids in which the slash command will appear. If it should be in all, remove the argument, but note that it will take some time (up to an hour) to register the command if it's for all guilds.
-async def first_command(interaction: discord.Interaction):
-    await interaction.response.send_message("Hello!")
+)
+async def first_command(interaction: discord.Interaction, character: str):
+    await interaction.response.send_message(f"You said {character}")
 
 
 @client.event
