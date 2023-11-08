@@ -24,4 +24,4 @@ Next, create a new Discord application to set up the bot with your server (read 
 
 ## Usage
 
-You can use the slash commands `/select-character [query]` and `/remove-character [query]` to select/remove character roles through their names! It facilitates Discord role management by not having to ask moderators to manually assign those roles.
+You can use the slash commands `/select-character [query]` and `/remove-character [query]` to select/remove character roles through their names! It facilitates Discord role management by not having to ask moderators to manually assign those roles (NOTE: The character roles in characters.py is are exclusive to the CSUF SSBU Discord. Feel free to change the names of the roles if using it on your own server).

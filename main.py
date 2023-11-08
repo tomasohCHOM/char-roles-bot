@@ -1,4 +1,4 @@
-from characters import characters
+from characters import *
 from dotenv import load_dotenv
 from discord.utils import get
 import discord
@@ -16,8 +16,14 @@ token = os.getenv("BOT_TOKEN")
 discord_server_id = int(os.getenv("DISCORD_SERVER_ID"))
 
 
+# Helper function to assign a specific role to the uesr
 async def assign_role(char_name: str, interaction: discord.Interaction) -> None:
     role = get(interaction.guild.roles, name=char_name)
+    if not role:
+        await interaction.response.send_message(
+            "The discord server does not have this role yet. Please ask the moderators."
+        )
+        return
     for char_role in interaction.user.roles:
         if char_role == role:
             await interaction.response.send_message("User already has this role.")
@@ -26,8 +32,15 @@ async def assign_role(char_name: str, interaction: discord.Interaction) -> None:
     await interaction.response.send_message(f"Selected `{char_name}` role.")
 
 
+# Helper function to remove a specific role to the user
 async def remove_role(char_name: str, interaction: discord.Interaction) -> None:
     role = get(interaction.guild.roles, name=char_name)
+    if not role:
+        await interaction.response.send_message(
+            "The discord server does not have this role."
+        )
+        return
+
     for char_role in interaction.user.roles:
         if char_role == role:
             await interaction.user.remove_roles(role)
@@ -49,9 +62,14 @@ async def select_character_command(
         return
     query = character.lower()
 
-    for character_name in characters:
-        if query in character_name.lower():
-            await assign_role(char_name=character_name, interaction=interaction)
+    for i in range(len(characters)):
+        if (
+            query in characters[i][OFFICIAL_NAME_IDX].lower()
+            or query in characters[i][ROLE_NAME_IDX]
+        ):
+            await assign_role(
+                char_name=characters[i][ROLE_NAME_IDX], interaction=interaction
+            )
             return
 
 
@@ -68,9 +86,14 @@ async def remove_character_command(
         return
     query = character.lower()
 
-    for character_name in characters:
-        if query in character_name.lower():
-            await remove_role(char_name=character_name, interaction=interaction)
+    for i in range(len(characters)):
+        if (
+            query in characters[i][OFFICIAL_NAME_IDX].lower()
+            or query in characters[i][ROLE_NAME_IDX]
+        ):
+            await remove_role(
+                char_name=characters[i][ROLE_NAME_IDX], interaction=interaction
+            )
             return
 
 
