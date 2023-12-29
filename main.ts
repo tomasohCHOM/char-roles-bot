@@ -8,15 +8,15 @@ import {
 
 export const hello = {
   chatInput: {
-    name: "hello_command",
+    name: "say_hello_command",
     description: "A command that sends hello!",
-    // options: {
-    //   character: {
-    //     type: ApplicationCommandOptionType.String,
-    //     description: "The character's name",
-    //     required: true,
-    //   },
-    // },
+    options: {
+      character: {
+        type: ApplicationCommandOptionType.String,
+        description: "The character's name",
+        required: true,
+      },
+    },
   },
 } as const satisfies AppSchema;
 
@@ -26,8 +26,8 @@ if (import.meta.main) {
 
 async function main() {
   await load({ export: true });
-  console.log("Hello World");
 
+  // Create the discord application
   const handle = await createApp({
     schema: hello,
     applicationID: Deno.env.get("DISCORD_APPLICATION_ID")!,
@@ -37,9 +37,10 @@ async function main() {
   }, (interaction) => {
     return {
       type: InteractionResponseType.ChannelMessageWithSource,
-      data: { content: "Hello" },
+      data: { content: `Hello, ${interaction.user?.username}` },
     };
   });
 
+  // Start server
   Deno.serve(handle);
 }
