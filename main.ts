@@ -8,7 +8,7 @@ import {
 
 export const hello = {
   chatInput: {
-    name: "say_hello_command",
+    name: "sample_command",
     description: "A command that sends hello!",
     options: {
       character: {
