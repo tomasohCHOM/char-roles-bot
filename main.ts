@@ -6,15 +6,32 @@ import {
   InteractionResponseType,
 } from "char-roles-bot/deps.ts";
 
-export const hello = {
+export const characterRoles = {
   chatInput: {
-    name: "sample_command",
-    description: "A command that sends hello!",
-    options: {
-      character: {
-        type: ApplicationCommandOptionType.String,
-        description: "The character's name",
-        required: true,
+    name: "character-roles",
+    description: "Set of commands to add/remove character roles in SSBU server",
+    subcommands: {
+      add: {
+        description: "Add a character role",
+        options: {
+          character: {
+            type: ApplicationCommandOptionType.String,
+            description:
+              "The character's name (query must be 3+ characters long)",
+            required: true,
+          },
+        },
+      },
+      remove: {
+        description: "Remove a character role",
+        options: {
+          character: {
+            type: ApplicationCommandOptionType.String,
+            description:
+              "The character's name (query must be 3+ characters long)",
+            required: true,
+          },
+        },
       },
     },
   },
@@ -29,16 +46,28 @@ async function main() {
 
   // Create the discord application
   const handle = await createApp({
-    schema: hello,
+    schema: characterRoles,
     applicationID: Deno.env.get("DISCORD_APPLICATION_ID")!,
     publicKey: Deno.env.get("DISCORD_PUBLIC_KEY")!,
     register: { token: Deno.env.get("DISCORD_TOKEN")! },
     invite: { path: "/invite", scopes: ["applications.commands"] },
-  }, (interaction) => {
-    return {
-      type: InteractionResponseType.ChannelMessageWithSource,
-      data: { content: `Hello, ${interaction.user?.username}` },
-    };
+  }, {
+    add: (interaction) => {
+      return {
+        type: InteractionResponseType.ChannelMessageWithSource,
+        data: {
+          content: `Hello, added ${interaction.data.parsedOptions.character}`,
+        },
+      };
+    },
+    remove: (interaction) => {
+      return {
+        type: InteractionResponseType.ChannelMessageWithSource,
+        data: {
+          content: `Hello, removed ${interaction.data.parsedOptions.character}`,
+        },
+      };
+    },
   });
 
   // Start server
