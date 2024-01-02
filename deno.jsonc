@@ -4,7 +4,8 @@
     "udd": "deno run -r --allow-read=. --allow-write=. --allow-net https://deno.land/x/udd/main.ts deps.ts && deno task lock",
     "lock": "deno cache --lock-write deps.ts",
     "all": "deno task udd && deno lint && deno fmt",
-    "start": "deno run -A --unstable main.ts"
+    "start": "deno run -A --unstable main.ts",
+    "ngrok": "ngrok http 8000"
   },
   "imports": {
     "char-roles-bot/": "./"
