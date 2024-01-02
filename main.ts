@@ -25,7 +25,7 @@ if (import.meta.main) {
 }
 
 async function main() {
-  await load({ export: true, allowEmptyValues: true });
+  await load({ export: true });
 
   // Create the discord application
   const handle = await createApp({
