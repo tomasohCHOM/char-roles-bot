@@ -5,6 +5,11 @@ import {
   createApp,
   InteractionResponseType,
 } from "char-roles-bot/deps.ts";
+import {
+  characters,
+  OFFICIAL_NAME_IDX,
+  ROLE_NAME_IDX,
+} from "char-roles-bot/lib/characters/characters.ts";
 
 export const characterRoles = {
   chatInput: {
@@ -53,18 +58,47 @@ async function main() {
     invite: { path: "/invite", scopes: ["applications.commands"] },
   }, {
     add: (interaction) => {
+      const query = interaction.data.parsedOptions.character.toLowerCase();
+      if (query.length < 3) {
+        throw new Error("Character query is too short!");
+      }
+
+      for (let i = 0; i < characters.length; i++) {
+        if (
+          characters[i][OFFICIAL_NAME_IDX].toLowerCase().includes(query) ||
+          characters[i][ROLE_NAME_IDX].toLowerCase().includes(query)
+        ) {
+          // do something
+        }
+      }
+
       return {
         type: InteractionResponseType.ChannelMessageWithSource,
         data: {
-          content: `Hello, added ${interaction.data.parsedOptions.character}`,
+          content: `Added \`${interaction.data.parsedOptions.character}\` role`,
         },
       };
     },
     remove: (interaction) => {
+      const query = interaction.data.parsedOptions.character.toLowerCase();
+      if (query.length < 3) {
+        throw new Error("Character query is too short!");
+      }
+
+      for (let i = 0; i < characters.length; i++) {
+        if (
+          characters[i][OFFICIAL_NAME_IDX].toLowerCase().includes(query) ||
+          characters[i][ROLE_NAME_IDX].toLowerCase().includes(query)
+        ) {
+          // do something
+        }
+      }
+
       return {
         type: InteractionResponseType.ChannelMessageWithSource,
         data: {
-          content: `Hello, removed ${interaction.data.parsedOptions.character}`,
+          content:
+            `Removed \`${interaction.data.parsedOptions.character}\` role`,
         },
       };
     },
