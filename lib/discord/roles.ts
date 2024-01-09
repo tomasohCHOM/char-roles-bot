@@ -1,4 +1,9 @@
-export async function getServerRoles(guildId: string, botToken: string) {
+import { RESTGetAPIGuildRolesResult } from "char-roles-bot/deps.ts";
+
+export async function getServerRoles(
+  guildId: string,
+  botToken: string,
+): Promise<RESTGetAPIGuildRolesResult> {
   const res = await fetch(
     `https://discord.com/api/v10/guilds/${guildId}/roles`,
     {
@@ -11,6 +16,29 @@ export async function getServerRoles(guildId: string, botToken: string) {
   );
 
   return res.json();
+}
+
+export async function makeAddRoleHandler(
+  guildId: string,
+  botToken: string,
+  userId: string,
+  roleId: string,
+) {
+  const res = await fetch(
+    `https://discord.com/api/v10/guilds/${guildId}/roles/${userId}/roles/${roleId}`,
+    {
+      method: "PUT",
+      headers: {
+        "Authorization": `Bot ${botToken}`,
+        "Accept": "application/json",
+      },
+    },
+  );
+
+  return res.json();
+}
+
+export async function makeDeleteRoleHandler() {
 }
 
 export async function addRole(
