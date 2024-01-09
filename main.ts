@@ -42,6 +42,21 @@ export const characterRoles = {
   },
 } as const satisfies AppSchema;
 
+async function getServerRoles(guild_id: string, bot_token: string) {
+  const res = await fetch(
+    `https://discord.com/api/v10/guilds/${guild_id}/roles`,
+    {
+      method: "GET",
+      headers: {
+        "Authorization": `Bot ${bot_token}`,
+        "Accept": "application/json",
+      },
+    },
+  );
+
+  return res.json();
+}
+
 if (import.meta.main) {
   await main();
 }
@@ -79,7 +94,7 @@ async function main() {
         },
       };
     },
-    remove: (interaction) => {
+    remove: async (interaction) => {
       const query = interaction.data.parsedOptions.character.toLowerCase();
       if (query.length < 3) {
         throw new Error("Character query is too short!");
@@ -93,6 +108,12 @@ async function main() {
           // do something
         }
       }
+
+      const data = await getServerRoles(
+        interaction.guild_id!,
+        Deno.env.get("DISCORD_TOKEN")!,
+      );
+      console.log(data);
 
       return {
         type: InteractionResponseType.ChannelMessageWithSource,
