@@ -12,6 +12,7 @@ import {
   ROLE_NAME_IDX,
 } from "char-roles-bot/lib/characters/characters.ts";
 import { getServerRoles } from "char-roles-bot/lib/discord/mod.ts";
+import { addRole, removeRole } from "char-roles-bot/lib/discord/roles.ts";
 
 export const characterRoles = {
   chatInput: {
@@ -19,7 +20,7 @@ export const characterRoles = {
     description: "Set of commands to add/remove character roles in SSBU server",
     subcommands: {
       add: {
-        description: "Add a character role",
+        description: "Selects a Smash Character role.",
         options: {
           character: {
             type: ApplicationCommandOptionType.String,
@@ -30,7 +31,8 @@ export const characterRoles = {
         },
       },
       remove: {
-        description: "Remove a character role",
+        description:
+          "Removes a Smash Character role for when you finally decided to drop that low-tier ass character.",
         options: {
           character: {
             type: ApplicationCommandOptionType.String,
@@ -76,17 +78,32 @@ async function main() {
           characters[i][OFFICIAL_NAME_IDX].toLowerCase().includes(query) ||
           characters[i][ROLE_NAME_IDX].toLowerCase().includes(query)
         ) {
-          // do something
+          await addRole(
+            characters[i][ROLE_NAME_IDX],
+            interaction.guild_id!,
+            Deno.env.get("DISCORD_TOKEN")!,
+          );
+          return {
+            type: InteractionResponseType.ChannelMessageWithSource,
+            data: {
+              content:
+                `Added \`${interaction.data.parsedOptions.character}\` role`,
+              flags: MessageFlags.Ephemeral,
+            },
+          };
         }
       }
 
       return {
         type: InteractionResponseType.ChannelMessageWithSource,
         data: {
-          content: `Added \`${interaction.data.parsedOptions.character}\` role`,
+          content:
+            "The discord server does not have this role yet. Please ask the moderators.",
+          flags: MessageFlags.Ephemeral,
         },
       };
     },
+
     remove: async (interaction) => {
       const query = interaction.data.parsedOptions.character.toLowerCase();
       if (query.length < 3) {
@@ -104,7 +121,19 @@ async function main() {
           characters[i][OFFICIAL_NAME_IDX].toLowerCase().includes(query) ||
           characters[i][ROLE_NAME_IDX].toLowerCase().includes(query)
         ) {
-          // do something
+          await removeRole(
+            characters[i][ROLE_NAME_IDX],
+            interaction.guild_id!,
+            Deno.env.get("DISCORD_TOKEN")!,
+          );
+          return {
+            type: InteractionResponseType.ChannelMessageWithSource,
+            data: {
+              content:
+                `Removed \`${interaction.data.parsedOptions.character}\` role`,
+              flags: MessageFlags.Ephemeral,
+            },
+          };
         }
       }
 
@@ -113,12 +142,11 @@ async function main() {
         Deno.env.get("DISCORD_TOKEN")!,
       );
       console.log(data);
-
       return {
         type: InteractionResponseType.ChannelMessageWithSource,
         data: {
-          content:
-            `Removed \`${interaction.data.parsedOptions.character}\` role`,
+          content: "User does not have this role",
+          flags: MessageFlags.Ephemeral,
         },
       };
     },
