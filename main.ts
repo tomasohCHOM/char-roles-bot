@@ -4,12 +4,14 @@ import {
   ApplicationCommandOptionType,
   createApp,
   InteractionResponseType,
+  MessageFlags,
 } from "char-roles-bot/deps.ts";
 import {
   characters,
   OFFICIAL_NAME_IDX,
   ROLE_NAME_IDX,
 } from "char-roles-bot/lib/characters/characters.ts";
+import { getServerRoles } from "char-roles-bot/lib/discord/mod.ts";
 
 export const characterRoles = {
   chatInput: {
@@ -42,21 +44,6 @@ export const characterRoles = {
   },
 } as const satisfies AppSchema;
 
-async function getServerRoles(guild_id: string, bot_token: string) {
-  const res = await fetch(
-    `https://discord.com/api/v10/guilds/${guild_id}/roles`,
-    {
-      method: "GET",
-      headers: {
-        "Authorization": `Bot ${bot_token}`,
-        "Accept": "application/json",
-      },
-    },
-  );
-
-  return res.json();
-}
-
 if (import.meta.main) {
   await main();
 }
@@ -72,10 +59,16 @@ async function main() {
     register: { token: Deno.env.get("DISCORD_TOKEN")! },
     invite: { path: "/invite", scopes: ["applications.commands"] },
   }, {
-    add: (interaction) => {
+    add: async (interaction) => {
       const query = interaction.data.parsedOptions.character.toLowerCase();
       if (query.length < 3) {
-        throw new Error("Character query is too short!");
+        return {
+          type: InteractionResponseType.ChannelMessageWithSource,
+          data: {
+            content: "Character query is too short!",
+            flags: MessageFlags.Ephemeral,
+          },
+        };
       }
 
       for (let i = 0; i < characters.length; i++) {
@@ -97,7 +90,13 @@ async function main() {
     remove: async (interaction) => {
       const query = interaction.data.parsedOptions.character.toLowerCase();
       if (query.length < 3) {
-        throw new Error("Character query is too short!");
+        return {
+          type: InteractionResponseType.ChannelMessageWithSource,
+          data: {
+            content: "Character query is too short!",
+            flags: MessageFlags.Ephemeral,
+          },
+        };
       }
 
       for (let i = 0; i < characters.length; i++) {
