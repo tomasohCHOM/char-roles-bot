@@ -11,7 +11,6 @@ import {
   OFFICIAL_NAME_IDX,
   ROLE_NAME_IDX,
 } from "char-roles-bot/lib/characters/characters.ts";
-import { getServerRoles } from "char-roles-bot/lib/discord/mod.ts";
 import { addRole, removeRole } from "char-roles-bot/lib/discord/roles.ts";
 
 export const characterRoles = {
@@ -78,22 +77,12 @@ async function main() {
           characters[i][OFFICIAL_NAME_IDX].toLowerCase().includes(query) ||
           characters[i][ROLE_NAME_IDX].toLowerCase().includes(query)
         ) {
-          const { response, error } = await addRole(
+          const response = await addRole(
             characters[i][ROLE_NAME_IDX],
             interaction.member?.user.id!,
             interaction.guild_id!,
             Deno.env.get("DISCORD_TOKEN")!,
           );
-
-          if (error) {
-            return {
-              type: InteractionResponseType.ChannelMessageWithSource,
-              data: {
-                content: response,
-                flags: MessageFlags.Ephemeral,
-              },
-            };
-          }
 
           return {
             type: InteractionResponseType.ChannelMessageWithSource,
@@ -131,27 +120,23 @@ async function main() {
           characters[i][OFFICIAL_NAME_IDX].toLowerCase().includes(query) ||
           characters[i][ROLE_NAME_IDX].toLowerCase().includes(query)
         ) {
-          await removeRole(
+          const response = await removeRole(
             characters[i][ROLE_NAME_IDX],
+            interaction.member?.user.id!,
             interaction.guild_id!,
             Deno.env.get("DISCORD_TOKEN")!,
           );
+
           return {
             type: InteractionResponseType.ChannelMessageWithSource,
             data: {
-              content:
-                `Removed \`${interaction.data.parsedOptions.character}\` role`,
+              content: response,
               flags: MessageFlags.Ephemeral,
             },
           };
         }
       }
 
-      const data = await getServerRoles(
-        interaction.guild_id!,
-        Deno.env.get("DISCORD_TOKEN")!,
-      );
-      console.log(data);
       return {
         type: InteractionResponseType.ChannelMessageWithSource,
         data: {
@@ -162,6 +147,6 @@ async function main() {
     },
   });
 
-  // Start server
+  // Start the server.
   Deno.serve(handle);
 }
