@@ -78,16 +78,27 @@ async function main() {
           characters[i][OFFICIAL_NAME_IDX].toLowerCase().includes(query) ||
           characters[i][ROLE_NAME_IDX].toLowerCase().includes(query)
         ) {
-          await addRole(
+          const { response, error } = await addRole(
             characters[i][ROLE_NAME_IDX],
+            interaction.member?.user.id!,
             interaction.guild_id!,
             Deno.env.get("DISCORD_TOKEN")!,
           );
+
+          if (error) {
+            return {
+              type: InteractionResponseType.ChannelMessageWithSource,
+              data: {
+                content: response,
+                flags: MessageFlags.Ephemeral,
+              },
+            };
+          }
+
           return {
             type: InteractionResponseType.ChannelMessageWithSource,
             data: {
-              content:
-                `Added \`${interaction.data.parsedOptions.character}\` role`,
+              content: response,
               flags: MessageFlags.Ephemeral,
             },
           };
@@ -97,8 +108,7 @@ async function main() {
       return {
         type: InteractionResponseType.ChannelMessageWithSource,
         data: {
-          content:
-            "The discord server does not have this role yet. Please ask the moderators.",
+          content: "This server role does not exist. Please try again.",
           flags: MessageFlags.Ephemeral,
         },
       };

@@ -1,5 +1,17 @@
 import { RESTGetAPIGuildRolesResult } from "char-roles-bot/deps.ts";
 
+export interface ManageServerRolesResult {
+  /**
+   * The message sent to the user after executing add/remove
+   */
+  response: string;
+
+  /**
+   * The indicator of whether the operation failed or not.
+   */
+  error?: string;
+}
+
 export async function getServerRoles(
   guildId: string,
   botToken: string,
@@ -18,14 +30,14 @@ export async function getServerRoles(
   return res.json();
 }
 
-export async function makeAddRoleHandler(
+export async function addRoleHandler(
   guildId: string,
-  botToken: string,
   userId: string,
   roleId: string,
+  botToken: string,
 ) {
-  const res = await fetch(
-    `https://discord.com/api/v10/guilds/${guildId}/roles/${userId}/roles/${roleId}`,
+  await fetch(
+    `https://discord.com/api/v10/guilds/${guildId}/members/${userId}/roles/${roleId}`,
     {
       method: "PUT",
       headers: {
@@ -34,8 +46,6 @@ export async function makeAddRoleHandler(
       },
     },
   );
-
-  return res.json();
 }
 
 export async function makeDeleteRoleHandler() {
@@ -43,14 +53,25 @@ export async function makeDeleteRoleHandler() {
 
 export async function addRole(
   characterName: string,
+  userId: string,
   guildId: string,
   botToken: string,
-) {
+): Promise<ManageServerRolesResult> {
   const serverRoles = await getServerRoles(guildId, botToken);
-  if (!serverRoles.some((role) => role.name === characterName)) {
-    console.log(characterName + " is not a role");
+  const role = serverRoles.find((role) => role.name === characterName);
+
+  if (!role) {
+    return {
+      response:
+        "The discord server does not have this role yet. Please ask the moderators.",
+      error: "Server role does not exist for this character.",
+    };
   }
-  console.log(characterName);
+
+  await addRoleHandler(guildId, userId, role.id, botToken);
+  return {
+    response: `Added \`${characterName}\` role.`,
+  };
 }
 
 export async function removeRole(
