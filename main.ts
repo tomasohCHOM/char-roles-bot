@@ -13,6 +13,9 @@ import {
 } from "char-roles-bot/lib/characters/characters.ts";
 import { addRole, removeRole } from "char-roles-bot/lib/discord/roles.ts";
 
+/**
+ * Defines the schema of the character roles slash command app.
+ */
 export const characterRoles = {
   chatInput: {
     name: "character-roles",
@@ -52,12 +55,15 @@ if (import.meta.main) {
 async function main() {
   await load({ export: true });
 
+  // The bot token is used more than once.
+  const BOT_TOKEN = Deno.env.get("DISCORD_TOKEN")!;
+
   // Create the discord application
   const handle = await createApp({
     schema: characterRoles,
     applicationID: Deno.env.get("DISCORD_APPLICATION_ID")!,
     publicKey: Deno.env.get("DISCORD_PUBLIC_KEY")!,
-    register: { token: Deno.env.get("DISCORD_TOKEN")! },
+    register: { token: BOT_TOKEN },
     invite: { path: "/invite", scopes: ["applications.commands"] },
   }, {
     add: async (interaction) => {
@@ -81,7 +87,7 @@ async function main() {
             characters[i][ROLE_NAME_IDX],
             interaction.member?.user.id!,
             interaction.guild_id!,
-            Deno.env.get("DISCORD_TOKEN")!,
+            BOT_TOKEN,
           );
 
           return {
@@ -97,7 +103,8 @@ async function main() {
       return {
         type: InteractionResponseType.ChannelMessageWithSource,
         data: {
-          content: "This server role does not exist. Please try again.",
+          content:
+            "This server role does not exist / is inacessible. Please try again.",
           flags: MessageFlags.Ephemeral,
         },
       };
@@ -124,7 +131,7 @@ async function main() {
             characters[i][ROLE_NAME_IDX],
             interaction.member?.user.id!,
             interaction.guild_id!,
-            Deno.env.get("DISCORD_TOKEN")!,
+            BOT_TOKEN,
           );
 
           return {
@@ -140,7 +147,7 @@ async function main() {
       return {
         type: InteractionResponseType.ChannelMessageWithSource,
         data: {
-          content: "User does not have this role",
+          content: "User does not have this role.",
           flags: MessageFlags.Ephemeral,
         },
       };

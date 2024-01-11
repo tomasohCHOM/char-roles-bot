@@ -1,8 +1,4 @@
 export { load } from "https://deno.land/std@0.211.0/dotenv/mod.ts";
-// export type { APIUser } from "https://deno.land/x/discord_api_types@0.37.67/v10.ts";
-// export {
-//   ApplicationCommandOptionType,
-// } from "https://deno.land/x/discord_api_types@0.37.67/v10.ts";
 export type {
   RESTGetAPIGuildRolesResult,
   RESTPutAPIGuildMemberRoleResult,
