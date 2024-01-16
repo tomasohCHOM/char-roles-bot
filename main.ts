@@ -6,12 +6,8 @@ import {
   InteractionResponseType,
   MessageFlags,
 } from "char-roles-bot/deps.ts";
-import {
-  characters,
-  OFFICIAL_NAME_IDX,
-  ROLE_NAME_IDX,
-} from "char-roles-bot/lib/characters/characters.ts";
 import { addRole, removeRole } from "char-roles-bot/lib/discord/roles.ts";
+import { verifyQuery } from "char-roles-bot/lib/characters/verify.ts";
 
 /**
  * Defines the schema of the character roles slash command app.
@@ -78,33 +74,29 @@ async function main() {
         };
       }
 
-      for (let i = 0; i < characters.length; i++) {
-        if (
-          characters[i][OFFICIAL_NAME_IDX].toLowerCase().includes(query) ||
-          characters[i][ROLE_NAME_IDX].toLowerCase().includes(query)
-        ) {
-          const response = await addRole(
-            characters[i][ROLE_NAME_IDX],
-            interaction.member?.user.id!,
-            interaction.guild_id!,
-            BOT_TOKEN,
-          );
+      const queryVerification = verifyQuery(query);
 
-          return {
-            type: InteractionResponseType.ChannelMessageWithSource,
-            data: {
-              content: response,
-              flags: MessageFlags.Ephemeral,
-            },
-          };
-        }
+      if (!queryVerification.success) {
+        return {
+          type: InteractionResponseType.ChannelMessageWithSource,
+          data: {
+            content: "User does not have this role.",
+            flags: MessageFlags.Ephemeral,
+          },
+        };
       }
+
+      const response = await addRole(
+        queryVerification.data,
+        interaction.member?.user.id!,
+        interaction.guild_id!,
+        BOT_TOKEN,
+      );
 
       return {
         type: InteractionResponseType.ChannelMessageWithSource,
         data: {
-          content:
-            "This server role does not exist / is inacessible. Please try again.",
+          content: response,
           flags: MessageFlags.Ephemeral,
         },
       };
@@ -122,32 +114,29 @@ async function main() {
         };
       }
 
-      for (let i = 0; i < characters.length; i++) {
-        if (
-          characters[i][OFFICIAL_NAME_IDX].toLowerCase().includes(query) ||
-          characters[i][ROLE_NAME_IDX].toLowerCase().includes(query)
-        ) {
-          const response = await removeRole(
-            characters[i][ROLE_NAME_IDX],
-            interaction.member?.user.id!,
-            interaction.guild_id!,
-            BOT_TOKEN,
-          );
+      const queryVerification = verifyQuery(query);
 
-          return {
-            type: InteractionResponseType.ChannelMessageWithSource,
-            data: {
-              content: response,
-              flags: MessageFlags.Ephemeral,
-            },
-          };
-        }
+      if (!queryVerification.success) {
+        return {
+          type: InteractionResponseType.ChannelMessageWithSource,
+          data: {
+            content: "User does not have this role.",
+            flags: MessageFlags.Ephemeral,
+          },
+        };
       }
+
+      const response = await removeRole(
+        queryVerification.data,
+        interaction.member?.user.id!,
+        interaction.guild_id!,
+        BOT_TOKEN,
+      );
 
       return {
         type: InteractionResponseType.ChannelMessageWithSource,
         data: {
-          content: "User does not have this role.",
+          content: response,
           flags: MessageFlags.Ephemeral,
         },
       };

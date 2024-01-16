@@ -3,9 +3,6 @@
 
 // characters[i] = ["Name in Official Roster", "Name as it appears in the Server roles"]
 
-export const OFFICIAL_NAME_IDX = 0;
-export const ROLE_NAME_IDX = 1;
-
 export const characters = [
   ["Falco", "Falco"],
   ["Mario", "Mario"],
